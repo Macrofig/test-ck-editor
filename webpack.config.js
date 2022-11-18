@@ -1,15 +1,24 @@
 const path = require('path');
 const { styles } = require('@ckeditor/ckeditor5-dev-utils');
+const CKEditorWebpackPlugin = require('@ckeditor/ckeditor5-dev-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  // https://webpack.js.org/configuration/entry-context/
+  mode: 'development',
   entry: './app.js',
-
-  // https://webpack.js.org/configuration/output/
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },
+  resolve: { extensions: ['.tsx', '.ts', '.js'] },
+  plugins: [
+    new CKEditorWebpackPlugin({
+      // See https://ckeditor.com/docs/ckeditor5/latest/features/ui-language.html
+      language: 'en',
+      buildAllTranslationsToSeparateFiles: true,
+    }),
+    new HtmlWebpackPlugin({ template: './index.html' }),
+  ],
   devServer: {
     static: {
       directory: path.join(__dirname),
@@ -20,6 +29,8 @@ module.exports = {
 
   module: {
     rules: [
+      { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader' },
+      { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
       {
         test: /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
 
